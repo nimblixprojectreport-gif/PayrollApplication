@@ -1,16 +1,32 @@
-
 from django.db import models
+from django.contrib.auth.models import User
 
-class Employee(models.Model):
-    
-    company_id = models.CharField(max_length=50)
-    employee_code = models.CharField(max_length=50)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=150)
-    mobile = models.CharField(max_length=20)
-    department_id = models.CharField(max_length=50)
-    designation_id = models.CharField(max_length=50)
+
+class LeaveBalance(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    total_leaves = models.IntegerField(default=20)
+    used_leaves = models.IntegerField(default=0)
+
+    def remaining_leaves(self):
+        return self.total_leaves - self.used_leaves
 
     def __str__(self):
-        return self.first_name
+        return f"{self.user.username} Leave Balance"
+
+
+class LeaveRequest(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.status}"

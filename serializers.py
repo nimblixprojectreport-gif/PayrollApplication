@@ -1,8 +1,16 @@
-
 from rest_framework import serializers
-from .models import Employee
+from .models import LeaveBalance, LeaveRequest
 
-class EmployeeSerializer(serializers.ModelSerializer):
+
+class LeaveBalanceSerializer(serializers.ModelSerializer):
+    remaining_leaves = serializers.IntegerField(source='remaining_leaves', read_only=True)
+
     class Meta:
-        model = Employee
+        model = LeaveBalance
+        fields = '__all__'
+
+
+class LeaveRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeaveRequest
         fields = '__all__'

@@ -1,7 +1,13 @@
 from rest_framework import viewsets
-from .models import Employee
-from .serializers import EmployeeSerializer
+from .models import LeaveBalance, LeaveRequest
+from .serializers import LeaveBalanceSerializer, LeaveRequestSerializer
 
-class EmployeeViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+
+class LeaveBalanceViewSet(viewsets.ModelViewSet):
+    queryset = LeaveBalance.objects.all()
+    serializer_class = LeaveBalanceSerializer
+
+
+class LeaveRequestViewSet(viewsets.ModelViewSet):
+    queryset = LeaveRequest.objects.all()
+    serializer_class = LeaveRequestSerializer
