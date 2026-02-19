@@ -8,6 +8,8 @@ class Shift(BaseModel):
 
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
+    address= models.CharField(max_length=255)
+
     name = models.CharField(max_length=150)
 
     start_time = models.TimeField()
