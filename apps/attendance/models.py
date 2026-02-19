@@ -7,6 +7,7 @@ from employees.models import Employee
 class Shift(BaseModel):
 
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True)
 
     name = models.CharField(max_length=150)
 
