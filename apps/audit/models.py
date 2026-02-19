@@ -1,7 +1,7 @@
 from django.db import models
-from core.models import BaseModel
-from companies.models import Company
-from accounts.models import User
+from apps.core.models import BaseModel
+from apps.companies.models import Company
+from apps.accounts.models import User
 
 
 class AuditLog(BaseModel):

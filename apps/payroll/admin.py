@@ -1,7 +1,7 @@
 from django.db import models
-from core.models import BaseModel
-from companies.models import Company
-from employees.models import Employee
+from apps.core.models import BaseModel
+from apps.companies.models import Company
+from apps.employees.models import Employee
 
 
 class SalaryStructure(BaseModel):
