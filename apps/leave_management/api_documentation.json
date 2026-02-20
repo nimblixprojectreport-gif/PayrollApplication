@@ -1,0 +1,32 @@
+{
+    "leave_requests": {
+        "create": {
+            "method": "POST",
+            "endpoint": "/api/leave-requests",
+            "body": {
+                "employee_id": "uuid",
+                "leave_type_id": "uuid",
+                "start_date": "YYYY-MM-DD",
+                "end_date": "YYYY-MM-DD"
+            }
+        },
+        "list": {
+            "method": "GET",
+            "endpoint": "/api/leave-requests"
+        },
+        "approve": {
+            "method": "PUT",
+            "endpoint": "/api/leave-requests/{id}/approve"
+        },
+        "reject": {
+            "method": "PUT",
+            "endpoint": "/api/leave-requests/{id}/reject"
+        }
+    },
+    "leave_balance": {
+        "get_employee_balance": {
+            "method": "GET",
+            "endpoint": "/api/employees/{id}/leave-balance"
+        }
+    }
+}
