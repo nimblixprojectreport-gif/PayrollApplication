@@ -1,0 +1,4 @@
+It is impossible to add the field 'generated_at' with 'auto_now_add=True' to payroll without providing a default. This is because the database needs something to populate existing rows.
+ 1) Provide a one-off default now which will be set on all existing rows
+ 2) Quit and manually define a default value in models.py.
+Select an option: 

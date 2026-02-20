@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import LeaveType
+from .models import LeaveType, LeaveRequest, LeaveBalance
 
 class LeaveTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,3 +25,15 @@ class LeaveTypeSerializer(serializers.ModelSerializer):
                 "max_carry_forward": "Max carry forward must be 0 if carry forward is not allowed."
             })
         return data
+
+class LeaveRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeaveRequest
+        fields = '__all__'
+        read_only_fields = ['id', 'total_days', 'status', 'approved_by', 'approved_at', 'created_at']
+
+class LeaveBalanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeaveBalance
+        fields = '__all__'
+        read_only_fields = ['id', 'remaining']
