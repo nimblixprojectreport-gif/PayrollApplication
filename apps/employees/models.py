@@ -1,8 +1,8 @@
 from django.db import models
-from core.models import BaseModel
-from companies.models import Company
-from accounts.models import User
-from organization.models import Department, Designation
+from apps.core.models import BaseModel
+from apps.companies.models import Company
+from apps.accounts.models import User
+from apps.organization.models import Department, Designation
 
 
 class Employee(BaseModel):
