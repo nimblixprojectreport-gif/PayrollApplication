@@ -111,3 +111,10 @@ __pycache__/
 db.sqlite3
 .env
 >>>>>>> backup-payrollteam
+
+# Python
+venv/
+.env
+__pycache__/
+*.pyc
+
