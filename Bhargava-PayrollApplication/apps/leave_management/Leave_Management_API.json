@@ -1,0 +1,67 @@
+{
+    "info": {
+        "_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-d1e2f3a4b5c6",
+        "name": "HRMS Leave Management",
+        "description": "API collection for managing Leave Types in the HRMS system.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Create Leave Type",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"company\": \"1e1ea2ea-1b0d-49b7-bee7-ced0b3caf651\",\n    \"name\": \"Annual Leave\",\n    \"yearly_quota\": 24,\n    \"carry_forward_allowed\": true,\n    \"max_carry_forward\": 10,\n    \"is_paid_leave\": true\n}"
+                },
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/leave-types/",
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000",
+                    "path": [
+                        "api",
+                        "leave-types",
+                        ""
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "List Leave Types",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/leave-types/",
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000",
+                    "path": [
+                        "api",
+                        "leave-types",
+                        ""
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "company": "replace-with-actual-company-uuid",
+    "financial_year_start_month": 4,
+    "payroll_cycle": "Monthly",
+    "pf_enabled": true,
+    "esi_enabled": true,
+    "professional_tax_enabled": true,
+    "tds_enabled": true,
+    "attendance_enabled": true
+}

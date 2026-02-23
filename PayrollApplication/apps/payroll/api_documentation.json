@@ -1,0 +1,47 @@
+{
+    "payroll_management": {
+        "generate_payroll": {
+            "method": "POST",
+            "endpoint": "/api/payrolls/generate/",
+            "body": {
+                "company_id": "uuid",
+                "month": 2,
+                "year": 2026,
+                "generated_by": "employee_uuid"
+            },
+            "description": "Calculates attendance, leaves, and salary components to generate monthly payroll."
+        },
+        "list_payrolls": {
+            "method": "GET",
+            "endpoint": "/api/payrolls/",
+            "description": "Returns a list of all generated payroll batches."
+        },
+        "finalize_payroll": {
+            "method": "PUT",
+            "endpoint": "/api/payrolls/{payroll_id}/finalize/",
+            "description": "Locks the payroll batch and marks it as finalized."
+        },
+        "mark_salary_paid": {
+            "method": "PUT",
+            "endpoint": "/api/payroll-items/{payroll_item_id}/mark_paid/",
+            "body": {
+                "paid_date": "YYYY-MM-DD",
+                "payment_reference": "string"
+            },
+            "description": "Marks an individual employee's salary record as paid."
+        },
+        "generate_payslip": {
+            "method": "POST",
+            "endpoint": "/api/payslips/generate/",
+            "body": {
+                "payroll_item_id": "uuid"
+            },
+            "description": "Generates a payslip record for a specific payroll item."
+        },
+        "download_payslip": {
+            "method": "GET",
+            "endpoint": "/api/payslips/{payslip_id}/download/",
+            "description": "Retrieves the download link for the generated payslip PDF."
+        }
+    }
+}

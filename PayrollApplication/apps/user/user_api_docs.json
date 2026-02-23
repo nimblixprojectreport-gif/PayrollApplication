@@ -1,0 +1,452 @@
+{
+    "info": {
+        "name": "User API – HRMS Payroll System",
+        "description": "Complete API documentation for the User module.\n\nBase URL: http://127.0.0.1:8000\n\nAll endpoints are prefixed with /api/users/\n\nFeatures:\n- Create users with password hashing\n- List users with optional company filter\n- Retrieve single user (password excluded)\n- Partial update (PATCH)\n- Soft delete (sets is_active = false)\n\nEmail is unique per company.",
+        "version": "1.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://127.0.0.1:8000",
+            "type": "string"
+        },
+        {
+            "key": "company_id",
+            "value": "PUT_YOUR_COMPANY_UUID_HERE",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "PUT_YOUR_USER_UUID_HERE",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "1. Create User",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/users/",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "users",
+                        ""
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"company\": \"{{company_id}}\",\n  \"username\": \"john_doe\",\n  \"email\": \"john.doe@example.com\",\n  \"mobile\": \"9876543210\",\n  \"password\": \"SecurePass@123\",\n  \"is_active\": true\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "description": "Creates a new user.\n\n**Required fields:**\n- `company` (UUID) – Must be a valid company ID.\n- `username` (string) – Display name of the user.\n- `email` (string) – Must be unique within the company.\n- `mobile` (string) – Mobile number.\n- `password` (string, min 6 chars) – Plain password; stored as SHA-256 hash.\n\n**Optional fields:**\n- `is_active` (boolean, default: true)\n\n**Validation:**\n- Email must be unique per company.\n- Password minimum length: 6 characters.\n- `company` must exist."
+            },
+            "response": [
+                {
+                    "name": "201 Created – Success",
+                    "status": "Created",
+                    "code": 201,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": true,\n  \"message\": \"User created successfully.\",\n  \"user\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"company\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n    \"company_name\": \"Acme Pvt Ltd\",\n    \"username\": \"john_doe\",\n    \"email\": \"john.doe@example.com\",\n    \"mobile\": \"9876543210\",\n    \"is_active\": true,\n    \"last_login\": null,\n    \"created_at\": \"2026-02-23T08:45:00Z\",\n    \"updated_at\": \"2026-02-23T08:45:00Z\"\n  }\n}"
+                },
+                {
+                    "name": "400 Bad Request – Duplicate Email",
+                    "status": "Bad Request",
+                    "code": 400,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": false,\n  \"errors\": {\n    \"email\": [\"A user with this email already exists in the company.\"]\n  }\n}"
+                },
+                {
+                    "name": "400 Bad Request – Missing Required Fields",
+                    "status": "Bad Request",
+                    "code": 400,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": false,\n  \"errors\": {\n    \"company\": [\"This field is required.\"],\n    \"password\": [\"This field is required.\"]\n  }\n}"
+                }
+            ]
+        },
+        {
+            "name": "2. List All Users",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/users/",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "users",
+                        ""
+                    ]
+                },
+                "description": "Returns a list of all active users.\n\n**Query Parameters (optional):**\n- `company_id` (UUID) – Filter users by company.\n\n**Notes:**\n- Only `is_active=true` users are returned.\n- Results are ordered by `created_at` descending (newest first).\n- `password_hash` is never returned."
+            },
+            "response": [
+                {
+                    "name": "200 OK – Success (All Users)",
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": true,\n  \"count\": 2,\n  \"users\": [\n    {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"company\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n      \"company_name\": \"Acme Pvt Ltd\",\n      \"username\": \"john_doe\",\n      \"email\": \"john.doe@example.com\",\n      \"mobile\": \"9876543210\",\n      \"is_active\": true,\n      \"last_login\": \"2026-02-22T10:30:00Z\",\n      \"created_at\": \"2026-02-20T08:00:00Z\",\n      \"updated_at\": \"2026-02-22T10:30:00Z\"\n    },\n    {\n      \"id\": \"b2c3d4e5-f6a7-8901-bcde-fa2345678901\",\n      \"company\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n      \"company_name\": \"Acme Pvt Ltd\",\n      \"username\": \"jane_smith\",\n      \"email\": \"jane.smith@example.com\",\n      \"mobile\": \"9123456780\",\n      \"is_active\": true,\n      \"last_login\": null,\n      \"created_at\": \"2026-02-19T09:00:00Z\",\n      \"updated_at\": \"2026-02-19T09:00:00Z\"\n    }\n  ]\n}"
+                }
+            ]
+        },
+        {
+            "name": "2a. List Users (Filtered by Company)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/users/?company_id={{company_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "users",
+                        ""
+                    ],
+                    "query": [
+                        {
+                            "key": "company_id",
+                            "value": "{{company_id}}"
+                        }
+                    ]
+                },
+                "description": "Returns users filtered by a specific company.\n\n**Query Parameters:**\n- `company_id` (UUID, required for this filter) – The UUID of the company."
+            },
+            "response": [
+                {
+                    "name": "200 OK – Filtered by Company",
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": true,\n  \"count\": 1,\n  \"users\": [\n    {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"company\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n      \"company_name\": \"Acme Pvt Ltd\",\n      \"username\": \"john_doe\",\n      \"email\": \"john.doe@example.com\",\n      \"mobile\": \"9876543210\",\n      \"is_active\": true,\n      \"last_login\": null,\n      \"created_at\": \"2026-02-20T08:00:00Z\",\n      \"updated_at\": \"2026-02-20T08:00:00Z\"\n    }\n  ]\n}"
+                }
+            ]
+        },
+        {
+            "name": "3. Retrieve Single User",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/users/{{user_id}}/",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "users",
+                        "{{user_id}}",
+                        ""
+                    ]
+                },
+                "description": "Retrieves details of a single active user by UUID.\n\n**Path Parameters:**\n- `user_id` (UUID) – The UUID of the user.\n\n**Notes:**\n- Returns 404 if the user does not exist or is soft-deleted.\n- `password_hash` is never returned."
+            },
+            "response": [
+                {
+                    "name": "200 OK – User Found",
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": true,\n  \"user\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"company\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n    \"company_name\": \"Acme Pvt Ltd\",\n    \"username\": \"john_doe\",\n    \"email\": \"john.doe@example.com\",\n    \"mobile\": \"9876543210\",\n    \"is_active\": true,\n    \"last_login\": \"2026-02-22T10:30:00Z\",\n    \"created_at\": \"2026-02-20T08:00:00Z\",\n    \"updated_at\": \"2026-02-22T10:30:00Z\"\n  }\n}"
+                },
+                {
+                    "name": "404 Not Found – User Doesn't Exist",
+                    "status": "Not Found",
+                    "code": 404,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": false,\n  \"message\": \"User not found.\"\n}"
+                }
+            ]
+        },
+        {
+            "name": "4. Update User (Partial PATCH)",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/users/{{user_id}}/",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "users",
+                        "{{user_id}}",
+                        ""
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"username\": \"john_updated\",\n  \"mobile\": \"9000011111\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "description": "Partially updates a user. Only send the fields you want to change.\n\n**Path Parameters:**\n- `user_id` (UUID) – The UUID of the user.\n\n**Updatable fields:**\n- `username` (string)\n- `email` (string) – Must still be unique within the company.\n- `mobile` (string)\n- `is_active` (boolean)\n\n**Notes:**\n- Returns 404 if user not found or already soft-deleted.\n- Changing `email` validates uniqueness within the same company."
+            },
+            "response": [
+                {
+                    "name": "200 OK – Updated Successfully",
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": true,\n  \"message\": \"User updated successfully.\",\n  \"user\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"company\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n    \"company_name\": \"Acme Pvt Ltd\",\n    \"username\": \"john_updated\",\n    \"email\": \"john.doe@example.com\",\n    \"mobile\": \"9000011111\",\n    \"is_active\": true,\n    \"last_login\": \"2026-02-22T10:30:00Z\",\n    \"created_at\": \"2026-02-20T08:00:00Z\",\n    \"updated_at\": \"2026-02-23T14:18:00Z\"\n  }\n}"
+                },
+                {
+                    "name": "400 Bad Request – Duplicate Email on Update",
+                    "status": "Bad Request",
+                    "code": 400,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": false,\n  \"errors\": {\n    \"email\": [\"A user with this email already exists in the company.\"]\n  }\n}"
+                },
+                {
+                    "name": "404 Not Found",
+                    "status": "Not Found",
+                    "code": 404,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": false,\n  \"message\": \"User not found.\"\n}"
+                }
+            ]
+        },
+        {
+            "name": "5. Delete User (Soft Delete)",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/users/{{user_id}}/",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "users",
+                        "{{user_id}}",
+                        ""
+                    ]
+                },
+                "description": "Soft-deletes a user by setting `is_active = false`.\n\nThe user record is **NOT** permanently deleted from the database.\n\n**Path Parameters:**\n- `user_id` (UUID) – The UUID of the user.\n\n**Notes:**\n- Once soft-deleted, the user will no longer appear in GET responses.\n- Returns 404 if user is not found or already deactivated."
+            },
+            "response": [
+                {
+                    "name": "200 OK – Soft Deleted",
+                    "status": "OK",
+                    "code": 200,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": true,\n  \"message\": \"User deleted (deactivated) successfully.\"\n}"
+                },
+                {
+                    "name": "404 Not Found",
+                    "status": "Not Found",
+                    "code": 404,
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"success\": false,\n  \"message\": \"User not found.\"\n}"
+                }
+            ]
+        }
+    ],
+    "event": [],
+    "info_extended": {
+        "api_summary": {
+            "base_url": "http://127.0.0.1:8000",
+            "prefix": "/api/users/",
+            "app_location": "apps/user/",
+            "db_table": "users",
+            "model_source": "apps.accounts.models.User (proxy)",
+            "authentication": "None (add Token/JWT auth in production)"
+        },
+        "endpoints": [
+            {
+                "method": "POST",
+                "url": "/api/users/",
+                "name": "Create User",
+                "description": "Creates a new user. Password is hashed before storage.",
+                "request_fields": {
+                    "company": "UUID – required",
+                    "username": "string – required",
+                    "email": "string – required, unique per company",
+                    "mobile": "string – required",
+                    "password": "string – required, min 6 chars (write-only)",
+                    "is_active": "boolean – optional, default true"
+                },
+                "success_response_code": 201,
+                "error_response_codes": [
+                    400
+                ]
+            },
+            {
+                "method": "GET",
+                "url": "/api/users/",
+                "name": "List Users",
+                "description": "Returns all active users. Optionally filter by company_id query param.",
+                "query_params": {
+                    "company_id": "UUID – optional"
+                },
+                "success_response_code": 200,
+                "error_response_codes": []
+            },
+            {
+                "method": "GET",
+                "url": "/api/users/{user_id}/",
+                "name": "Retrieve User",
+                "description": "Returns details of a single active user.",
+                "path_params": {
+                    "user_id": "UUID – required"
+                },
+                "success_response_code": 200,
+                "error_response_codes": [
+                    404
+                ]
+            },
+            {
+                "method": "PATCH",
+                "url": "/api/users/{user_id}/",
+                "name": "Partial Update User",
+                "description": "Updates one or more user fields. Email uniqueness is validated per company.",
+                "path_params": {
+                    "user_id": "UUID – required"
+                },
+                "request_fields": {
+                    "username": "string – optional",
+                    "email": "string – optional, must be unique in company",
+                    "mobile": "string – optional",
+                    "is_active": "boolean – optional"
+                },
+                "success_response_code": 200,
+                "error_response_codes": [
+                    400,
+                    404
+                ]
+            },
+            {
+                "method": "DELETE",
+                "url": "/api/users/{user_id}/",
+                "name": "Soft Delete User",
+                "description": "Deactivates a user (is_active = false). Record is preserved in DB.",
+                "path_params": {
+                    "user_id": "UUID – required"
+                },
+                "success_response_code": 200,
+                "error_response_codes": [
+                    404
+                ]
+            }
+        ],
+        "common_response_fields": {
+            "success": "boolean – true on success, false on error",
+            "message": "string – human-readable status message",
+            "user": "object – user data (present in create/retrieve/update)",
+            "users": "array – list of user objects (present in list)",
+            "count": "integer – number of users returned (present in list)",
+            "errors": "object – field-level validation errors (present on 400)"
+        },
+        "user_object_fields": {
+            "id": "UUID – auto-generated primary key",
+            "company": "UUID – foreign key to companies table",
+            "company_name": "string – read-only, resolved company name",
+            "username": "string",
+            "email": "string",
+            "mobile": "string",
+            "is_active": "boolean",
+            "last_login": "datetime | null",
+            "created_at": "datetime – auto-set on creation",
+            "updated_at": "datetime – auto-updated on save",
+            "password_hash": "NEVER returned in any response"
+        },
+        "notes": [
+            "password_hash is never exposed in any API response.",
+            "Soft delete preserves the record; is_active is set to false.",
+            "Email uniqueness is enforced per company (not globally).",
+            "All IDs (user, company) are UUID v4.",
+            "All datetimes are in UTC ISO 8601 format.",
+            "Run server: python manage.py runserver",
+            "Apply migrations: python manage.py migrate user"
+        ]
+    }
+}

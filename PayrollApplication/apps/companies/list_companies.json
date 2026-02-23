@@ -1,0 +1,25 @@
+[
+    {
+        "id": "uuid-here",
+        "name": "Ace Corp",
+        "legal_name": "Ace Corporation Private Limited",
+        "registration_number": "REG123456",
+        "pan_number": "ABCDE1234F",
+        "tan_number": "TANE12345G",
+        "pf_number": "PF12345",
+        "esi_number": "ESI12345",
+        "professional_tax_number": "PT12345",
+        "email": "info@acecorp.com",
+        "phone": "+919876543210",
+        "address": "123 Business Park, Tech City",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India",
+        "pincode": "400001",
+        "timezone": "Asia/Kolkata",
+        "currency": "INR",
+        "is_active": true,
+        "created_at": "2024-02-19T10:00:00Z",
+        "updated_at": "2024-02-19T10:00:00Z"
+    }
+]
