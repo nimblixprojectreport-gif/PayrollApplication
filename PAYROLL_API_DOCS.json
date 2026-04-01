@@ -1,0 +1,492 @@
+{
+  "title": "Payroll Management API",
+  "version": "1.0.0",
+  "baseURL": "http://127.0.0.1:8000/api",
+  "description": "Comprehensive API for payroll management including salary structures, components, formulas, and payroll calculation",
+  "endpoints": {
+    "salary_structures": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/salary-structures/",
+        "description": "Retrieve all salary structures with optional filtering",
+        "query_params": {
+          "company_id": "string (UUID) - Filter by company",
+          "is_active": "boolean - Filter by active status",
+          "name": "string - Filter by structure name",
+          "page": "integer - Pagination page number",
+          "page_size": "integer - Results per page"
+        },
+        "response": {
+          "count": "integer",
+          "next": "string (URL)",
+          "previous": "string (URL)",
+          "results": [
+            {
+              "id": "uuid",
+              "company_id": "uuid",
+              "name": "string",
+              "description": "string",
+              "is_active": "boolean",
+              "created_at": "datetime"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/salary-structures/",
+        "description": "Create a new salary structure",
+        "body": {
+          "company_id": "uuid (required)",
+          "name": "string (required, max 150 chars)",
+          "description": "string (optional)",
+          "is_active": "boolean (default: true)"
+        },
+        "response": {
+          "id": "uuid",
+          "company_id": "uuid",
+          "name": "string",
+          "description": "string",
+          "is_active": "boolean",
+          "created_at": "datetime"
+        }
+      },
+      "retrieve": {
+        "method": "GET",
+        "endpoint": "/salary-structures/{id}/",
+        "description": "Get a specific salary structure by ID",
+        "response": {
+          "id": "uuid",
+          "company_id": "uuid",
+          "name": "string",
+          "description": "string",
+          "is_active": "boolean",
+          "created_at": "datetime"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/salary-structures/{id}/",
+        "description": "Update a salary structure",
+        "body": {
+          "company_id": "uuid",
+          "name": "string",
+          "description": "string",
+          "is_active": "boolean"
+        }
+      },
+      "partial_update": {
+        "method": "PATCH",
+        "endpoint": "/salary-structures/{id}/",
+        "description": "Partially update a salary structure"
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/salary-structures/{id}/",
+        "description": "Delete a salary structure"
+      }
+    },
+    "salary_structure_versions": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/salary-structure-versions/",
+        "description": "Retrieve all salary structure versions",
+        "query_params": {
+          "salary_structure": "uuid - Filter by salary structure ID",
+          "effective_from": "date - Filter by effective from date",
+          "effective_to": "date - Filter by effective to date",
+          "page": "integer - Pagination page number"
+        },
+        "response": {
+          "count": "integer",
+          "results": [
+            {
+              "id": "uuid",
+              "salary_structure": "uuid",
+              "effective_from": "date",
+              "effective_to": "date (nullable)",
+              "created_at": "datetime"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/salary-structure-versions/",
+        "description": "Create a new version of a salary structure",
+        "body": {
+          "salary_structure": "uuid (required)",
+          "effective_from": "date (required, YYYY-MM-DD)",
+          "effective_to": "date (optional, YYYY-MM-DD)"
+        },
+        "validation": "effective_to must be >= effective_from if provided"
+      },
+      "retrieve": {
+        "method": "GET",
+        "endpoint": "/salary-structure-versions/{id}/"
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/salary-structure-versions/{id}/"
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/salary-structure-versions/{id}/"
+      }
+    },
+    "salary_components": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/salary-components/",
+        "description": "Retrieve all salary components with optional filtering",
+        "query_params": {
+          "company_id": "uuid - Filter by company",
+          "component_type": "string - Filter by type (EARNING, DEDUCTION, etc.)",
+          "is_taxable": "boolean - Filter by tax treatment",
+          "is_pf_applicable": "boolean - Filter by PF applicability",
+          "is_esi_applicable": "boolean - Filter by ESI applicability",
+          "is_active": "boolean - Filter by active status",
+          "name": "string - Filter by component name",
+          "page": "integer"
+        },
+        "response": {
+          "count": "integer",
+          "results": [
+            {
+              "id": "uuid",
+              "company_id": "uuid",
+              "name": "string",
+              "component_type": "string (EARNING, DEDUCTION)",
+              "is_taxable": "boolean",
+              "is_pf_applicable": "boolean",
+              "is_esi_applicable": "boolean",
+              "is_active": "boolean",
+              "created_at": "datetime"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/salary-components/",
+        "description": "Create a new salary component",
+        "body": {
+          "company_id": "uuid (required)",
+          "name": "string (required, max 150 chars)",
+          "component_type": "string (required)",
+          "is_taxable": "boolean (default: false)",
+          "is_pf_applicable": "boolean (default: false)",
+          "is_esi_applicable": "boolean (default: false)",
+          "is_active": "boolean (default: true)"
+        }
+      },
+      "retrieve": {
+        "method": "GET",
+        "endpoint": "/salary-components/{id}/"
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/salary-components/{id}/"
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/salary-components/{id}/"
+      }
+    },
+    "payroll_formulas": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/payroll-formulas/",
+        "description": "Retrieve all payroll formulas",
+        "query_params": {
+          "company_id": "uuid - Filter by company",
+          "name": "string - Filter by formula name",
+          "page": "integer"
+        },
+        "response": {
+          "count": "integer",
+          "results": [
+            {
+              "id": "uuid",
+              "company_id": "uuid",
+              "name": "string",
+              "formula_expression": "string",
+              "created_at": "datetime"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/payroll-formulas/",
+        "description": "Create a new payroll formula",
+        "body": {
+          "company_id": "uuid (required)",
+          "name": "string (required, max 150 chars)",
+          "formula_expression": "string (required) - e.g., 'BASIC * 0.12' or 'BASIC + DA - TDS'"
+        },
+        "example": {
+          "company_id": "550e8400-e29b-41d4-a716-446655440000",
+          "name": "HRA Calculation",
+          "formula_expression": "BASIC * 0.10"
+        }
+      },
+      "retrieve": {
+        "method": "GET",
+        "endpoint": "/payroll-formulas/{id}/"
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/payroll-formulas/{id}/"
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/payroll-formulas/{id}/"
+      }
+    },
+    "salary_structure_component_mappings": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/salary-structure-component-mappings/",
+        "description": "Retrieve all component mappings (links components to structures)",
+        "query_params": {
+          "salary_structure_version": "uuid - Filter by structure version",
+          "salary_component": "uuid - Filter by component",
+          "formula": "uuid - Filter by formula",
+          "calculation_type": "string - Filter by calculation type (FIXED, PERCENT, FORMULA)",
+          "page": "integer"
+        },
+        "response": {
+          "count": "integer",
+          "results": [
+            {
+              "id": "uuid",
+              "salary_structure_version": "uuid",
+              "salary_component": "uuid",
+              "formula": "uuid (nullable)",
+              "calculation_type": "string (FIXED, PERCENT, FORMULA)",
+              "value": "decimal (for FIXED or PERCENT)",
+              "display_order": "integer",
+              "created_at": "datetime"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/salary-structure-component-mappings/",
+        "description": "Create a mapping between a component and structure version",
+        "body": {
+          "salary_structure_version": "uuid (required)",
+          "salary_component": "uuid (required)",
+          "calculation_type": "string (required: FIXED, PERCENT, or FORMULA)",
+          "value": "decimal (required for FIXED/PERCENT type)",
+          "formula": "uuid (required if calculation_type=FORMULA)",
+          "display_order": "integer (optional, default: 0)"
+        },
+        "example_fixed": {
+          "salary_structure_version": "550e8400-e29b-41d4-a716-446655440001",
+          "salary_component": "550e8400-e29b-41d4-a716-446655440002",
+          "calculation_type": "FIXED",
+          "value": "25000.00",
+          "display_order": 1
+        },
+        "example_percent": {
+          "salary_structure_version": "550e8400-e29b-41d4-a716-446655440001",
+          "salary_component": "550e8400-e29b-41d4-a716-446655440003",
+          "calculation_type": "PERCENT",
+          "value": "10.00",
+          "display_order": 2
+        },
+        "example_formula": {
+          "salary_structure_version": "550e8400-e29b-41d4-a716-446655440001",
+          "salary_component": "550e8400-e29b-41d4-a716-446655440004",
+          "calculation_type": "FORMULA",
+          "formula": "550e8400-e29b-41d4-a716-446655440005",
+          "display_order": 3
+        }
+      },
+      "retrieve": {
+        "method": "GET",
+        "endpoint": "/salary-structure-component-mappings/{id}/"
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/salary-structure-component-mappings/{id}/"
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/salary-structure-component-mappings/{id}/"
+      }
+    },
+    "run_payroll": {
+      "generate": {
+        "method": "POST",
+        "endpoint": "/payrolls/run/",
+        "description": "Calculate and generate payroll for a company for a specific month/year",
+        "body": {
+          "company_id": "uuid (required)",
+          "month": "integer (required, 1-12)",
+          "year": "integer (required, 1900-2200)"
+        },
+        "response": {
+          "company_id": "uuid",
+          "month": "integer",
+          "year": "integer",
+          "salary_structure_id": "uuid",
+          "salary_structure_version_id": "uuid",
+          "lines": [
+            {
+              "component_id": "uuid",
+              "component_name": "string",
+              "component_type": "string",
+              "calculation_type": "string",
+              "amount": "decimal (Decimal)",
+              "display_order": "integer"
+            }
+          ],
+          "gross": "decimal",
+          "deductions": "decimal",
+          "net": "decimal"
+        },
+        "example_request": {
+          "company_id": "550e8400-e29b-41d4-a716-446655440000",
+          "month": 2,
+          "year": 2026
+        },
+        "example_response": {
+          "company_id": "550e8400-e29b-41d4-a716-446655440000",
+          "month": 2,
+          "year": 2026,
+          "salary_structure_id": "550e8400-e29b-41d4-a716-446655440010",
+          "salary_structure_version_id": "550e8400-e29b-41d4-a716-446655440011",
+          "lines": [
+            {
+              "component_id": "550e8400-e29b-41d4-a716-446655440002",
+              "component_name": "Basic Pay",
+              "component_type": "EARNING",
+              "calculation_type": "FIXED",
+              "amount": "25000.00",
+              "display_order": 0
+            },
+            {
+              "component_id": "550e8400-e29b-41d4-a716-446655440003",
+              "component_name": "HRA",
+              "component_type": "EARNING",
+              "calculation_type": "PERCENT",
+              "amount": "2500.00",
+              "display_order": 1
+            },
+            {
+              "component_id": "550e8400-e29b-41d4-a716-446655440004",
+              "component_name": "Professional Tax",
+              "component_type": "DEDUCTION",
+              "calculation_type": "FIXED",
+              "amount": "200.00",
+              "display_order": 2
+            }
+          ],
+          "gross": "27500.00",
+          "deductions": "200.00",
+          "net": "27300.00"
+        },
+        "errors": {
+          "400": {
+            "invalid_request": "Missing or invalid company_id, month, or year",
+            "no_salary_structure": "No active salary structure found for this company",
+            "no_version": "No salary structure version effective for this month",
+            "no_mappings": "No component mappings found for this structure version",
+            "formula_error": "Formula evaluation error - invalid expression or missing variables"
+          }
+        }
+      }
+    }
+  },
+  "models": {
+    "SalaryStructure": {
+      "description": "Defines a salary structure for a company",
+      "fields": {
+        "id": "UUID (primary key)",
+        "company_id": "UUID (required, indexed)",
+        "name": "CharField (max 150, required)",
+        "description": "TextField (optional)",
+        "is_active": "BooleanField (default: true)",
+        "created_at": "DateTimeField (auto_now_add)"
+      },
+      "unique_constraints": ["(company_id, name)"]
+    },
+    "SalaryStructureVersion": {
+      "description": "Versioning for salary structures - allows time-based changes",
+      "fields": {
+        "id": "UUID (primary key)",
+        "salary_structure": "ForeignKey to SalaryStructure",
+        "effective_from": "DateField (required)",
+        "effective_to": "DateField (optional)",
+        "created_at": "DateTimeField (auto_now_add)"
+      },
+      "notes": "effective_to must be >= effective_from if provided"
+    },
+    "SalaryComponent": {
+      "description": "Individual salary component (e.g., Basic, HRA, Tax)",
+      "fields": {
+        "id": "UUID (primary key)",
+        "company_id": "UUID (required, indexed)",
+        "name": "CharField (max 150, required)",
+        "component_type": "CharField (e.g., EARNING, DEDUCTION)",
+        "is_taxable": "BooleanField (default: false)",
+        "is_pf_applicable": "BooleanField (default: false)",
+        "is_esi_applicable": "BooleanField (default: false)",
+        "is_active": "BooleanField (default: true)",
+        "created_at": "DateTimeField (auto_now_add)"
+      },
+      "unique_constraints": ["(company_id, name)"]
+    },
+    "PayrollFormula": {
+      "description": "Mathematical formula for payroll calculations",
+      "fields": {
+        "id": "UUID (primary key)",
+        "company_id": "UUID (required, indexed)",
+        "name": "CharField (max 150, required)",
+        "formula_expression": "TextField (required)",
+        "created_at": "DateTimeField (auto_now_add)"
+      },
+      "unique_constraints": ["(company_id, name)"],
+      "example_expressions": [
+        "BASIC * 0.10",
+        "(BASIC + DA) * 0.12",
+        "BASIC - 200"
+      ]
+    },
+    "SalaryStructureComponentMapping": {
+      "description": "Links salary components to structure versions with calculation methods",
+      "fields": {
+        "id": "UUID (primary key)",
+        "salary_structure_version": "ForeignKey to SalaryStructureVersion",
+        "salary_component": "ForeignKey to SalaryComponent",
+        "calculation_type": "CharField (FIXED, PERCENT, FORMULA)",
+        "value": "DecimalField (for FIXED and PERCENT types)",
+        "formula": "ForeignKey to PayrollFormula (nullable, required for FORMULA type)",
+        "display_order": "IntegerField",
+        "created_at": "DateTimeField (auto_now_add)"
+      }
+    }
+  },
+  "workflow": {
+    "setup_payroll": [
+      "1. Create SalaryStructure for company",
+      "2. Create SalaryStructureVersion with effective_from date",
+      "3. Create SalaryComponents (Basic, HRA, Tax, etc.)",
+      "4. Create PayrollFormulas if using formula-based calculations",
+      "5. Create SalaryStructureComponentMappings to link components to structure with calculation types"
+    ],
+    "run_payroll": [
+      "POST /payrolls/run/ with company_id, month, year",
+      "API fetches active salary structure and effective version",
+      "Evaluates all component mappings in order",
+      "Returns calculated payroll with gross, deductions, and net"
+    ]
+  },
+  "authentication": "Token-based or Session-based (configure in Django settings)",
+  "pagination": "Default page size varies; use 'page' and optionally 'page_size' query parameters",
+  "filters": "All LIST endpoints support Django filter backends; see query_params for each endpoint"
+}

@@ -1,13 +1,14 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import PayrollViewSet, PayrollItemViewSet, PayslipViewSet, FormulaViewSet
-
-router = DefaultRouter()
-router.register(r'payrolls', PayrollViewSet)
-router.register(r'payroll-items', PayrollItemViewSet)
-router.register(r'payslips', PayslipViewSet)
-router.register(r'formulas', FormulaViewSet)
+from django.urls import path
+from .views import (
+    PayrollListCreateView, PayrollDetailView,
+    PayrollItemListCreateView,
+    PayslipListCreateView, PayslipDetailView,
+)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', PayrollListCreateView.as_view(), name='payroll-list'),
+    path('<str:pk>/', PayrollDetailView.as_view(), name='payroll-detail'),
+    path('items/', PayrollItemListCreateView.as_view(), name='payroll-item-list'),
+    path('payslips/', PayslipListCreateView.as_view(), name='payslip-list'),
+    path('payslips/<str:pk>/', PayslipDetailView.as_view(), name='payslip-detail'),
 ]

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -104,3 +105,24 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+=======
+__pycache__/
+*.pyc
+db.sqlite3
+.env
+>>>>>>> backup-payrollteam
+
+# Python
+venv/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# OS files
+.DS_Store
+

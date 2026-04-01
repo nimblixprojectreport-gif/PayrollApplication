@@ -1,16 +1,14 @@
 from django.urls import path
 from .views import (
-    LeaveTypeListView, 
-    LeaveTypeListCreateView, 
-    LeaveRequestApproveView, 
-    LeaveRequestRejectView, 
-    EmployeeLeaveBalanceView
+    LeaveTypeListCreateView, LeaveTypeDetailView,
+    LeaveBalanceListCreateView,
+    LeaveRequestListCreateView, LeaveRequestDetailView,
 )
 
 urlpatterns = [
-    path('leave-types', LeaveTypeListView.as_view(), name='leave-type-list-create'),
-    path('leave-requests', LeaveTypeListCreateView.as_view(), name='leave-request-list-create'),
-    path('leave-requests/<uuid:pk>/approve', LeaveRequestApproveView.as_view(), name='leave-request-approve'),
-    path('leave-requests/<uuid:pk>/reject', LeaveRequestRejectView.as_view(), name='leave-request-reject'),
-    path('employees/<uuid:employee_id>/leave-balance', EmployeeLeaveBalanceView.as_view(), name='employee-leave-balance'),
+    path('types/', LeaveTypeListCreateView.as_view(), name='leave-type-list'),
+    path('types/<str:pk>/', LeaveTypeDetailView.as_view(), name='leave-type-detail'),
+    path('balances/', LeaveBalanceListCreateView.as_view(), name='leave-balance-list'),
+    path('requests/', LeaveRequestListCreateView.as_view(), name='leave-request-list'),
+    path('requests/<str:pk>/', LeaveRequestDetailView.as_view(), name='leave-request-detail'),
 ]
